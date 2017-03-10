@@ -6,4 +6,6 @@ refer <3>
 Match fields: 802.3, mac, ip, ip6, limit, mark_m, stp bpdu, vlan.
 target: arpapply(PREROUTING-nat), dnat(BROUTING-broute, PREROUTING-nat, OUTPUT-nat), mark(every), snat(POSTROUTING-nat)
 
+chain: INPUT(packet from local), OUTPUT(to local), PREROUTING(packets comes in from net device), BROUTE(whether to local IP stack to route), POSTROUTING.
 
+table: filter, broute, nat. no mangle!
