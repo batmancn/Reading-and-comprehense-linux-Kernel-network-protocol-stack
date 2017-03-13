@@ -11,6 +11,14 @@
  *	2 of the License, or (at your option) any later version.
  */
 
+ // This is main entry, refer to br_init():
+ // 1. register STP protocol handler.
+ // 2. init FDB.
+ // 3. register br_net_ops.
+ // 4. br_netfilter_init, ebtables.
+ // 5. register_netdevice_notifier(br_device_notifier) for net device up/down notify.
+ // 6. br_netlink_init()
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>

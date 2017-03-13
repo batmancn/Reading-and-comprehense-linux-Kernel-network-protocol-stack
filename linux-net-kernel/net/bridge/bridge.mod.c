@@ -1,3 +1,6 @@
+// .mod.c
+// http://www.cnblogs.com/felixjia/archive/2011/09/15/2178126.html
+
 #include <linux/module.h>
 #include <linux/vermagic.h>
 #include <linux/compiler.h>
