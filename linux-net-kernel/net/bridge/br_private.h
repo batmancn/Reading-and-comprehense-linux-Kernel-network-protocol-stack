@@ -56,6 +56,14 @@ struct br_ip
 	__be16		proto;
 };
 
+// FDB entry struct:
+// hlist: header-list use it.
+// dst: if packet match, use this as destination.
+// rcu: protect members bellow.
+// ageing_timer: ageing timer of this entry.
+// addr: match L2 addr of this entry.
+// is_local: whether this entry is local addr.
+// is_static: static entry or not.
 struct net_bridge_fdb_entry
 {
 	struct hlist_node		hlist;

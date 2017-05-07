@@ -3,3 +3,15 @@ http://bbs.chinaunix.net/thread-3749229-1-2.html          [网络子系统] linux-2.6
 http://bbs.chinaunix.net/thread-4082396-1-2.html          [网络子系统] linux-2.6.35.6 nf_conntrack [复制链接]
 
 http://bbs.chinaunix.net/thread-1970484-1-1.html          Snort 入侵检测系统源码分析 [复制链接]
+
+https://upload.wikimedia.org/wikipedia/commons/3/37/Netfilter-packet-flow.svg
+netfilter整体结构
+
+http://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749208&fromuid=20171559  netfilter讲解
+
+
+nf_conn中的子连接(IP_CT_RELATED)是什么？
+
+例如FTP，会使用两个TCP连接，一个用于控制信道、一个用于数据信道(https://wenku.baidu.com/view/f80e67b281c758f5f71f6736.html)。那么首先发来的是控制报文(IP_CT_NEW)，然后是数据报文(IP_CT_RELATED)，那么需要手动在IP_CT_NEW的连接上添加IP_CT_RELATED连接。
+
+这样做的原因是一次FTP操作，需要相同的NAT一类的功能。所以IP_CT_NEW与相关的IP_CT_RELATED这两个连接执行相同的操作(例如NAT)。

@@ -13,9 +13,9 @@
 
  // This is main entry, refer to br_init():
  // 1. register STP protocol handler.
- // 2. init FDB.
+ // 2. init FDB, refer br_fdb.c .
  // 3. register br_net_ops.
- // 4. br_netfilter_init, ebtables.
+ // 4. br_netfilter_init, ebtables, refer br_netfilter.c .
  // 5. register_netdevice_notifier(br_device_notifier) for net device up/down notify.
  // 6. br_netlink_init()
 

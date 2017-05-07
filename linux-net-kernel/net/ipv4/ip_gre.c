@@ -10,6 +10,8 @@
  *
  */
 
+ // This is ip_gre module code, vxlan module code refer to OVS_COMMENT.
+
 #include <linux/capability.h>
 #include <linux/module.h>
 #include <linux/types.h>

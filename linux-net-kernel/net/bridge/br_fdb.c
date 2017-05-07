@@ -11,6 +11,8 @@
  *	2 of the License, or (at your option) any later version.
  */
 
+ // This is FDB, struct of FDB is 'struct net_bridge_fdb_entry'
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/rculist.h>

@@ -2396,6 +2396,7 @@ static int compat_do_ebt_get_ctl(struct sock *sk, int cmd,
 }
 #endif
 
+// ebtables netlink api.
 static struct nf_sockopt_ops ebt_sockopts =
 {
 	.pf		= PF_INET,
