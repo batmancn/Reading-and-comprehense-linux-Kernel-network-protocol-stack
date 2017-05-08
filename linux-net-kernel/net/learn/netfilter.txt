@@ -17,7 +17,7 @@ nf_connÖÐµÄ×ÓÁ¬½Ó(IP_CT_RELATED)ÊÇÊ²Ã´£¿
 ÕâÑù×öµÄÔ­ÒòÊÇÒ»´ÎFTP²Ù×÷£¬ÐèÒªÏàÍ¬µÄNATÒ»ÀàµÄ¹¦ÄÜ¡£ËùÒÔIP_CT_NEWÓëÏà¹ØµÄIP_CT_RELATEDÕâÁ½¸öÁ¬½ÓÖ´ÐÐÏàÍ¬µÄ²Ù×÷(ÀýÈçNAT)¡£
 
 
-netfilter¿ò¼Üå
+netfilter¿ò¼Ü?
 
 nf_hooks: È«¾Ö½á¹¹Ìå´æ´¢ËùÓÐnetfilter¡£ipv4, ipv6, arp, linux bridge,µÈ¶¼ÔÚÕâ×¢²áÁË¡£
 hookµãÓÀÔ¶ÊÇ: PRE_ROUTING LOCAL_IN FORWARD LOCAL_OUT POST_ROUTING
@@ -64,3 +64,17 @@ net.xt.tables[]: struct net net; struct netns_xt xt; struct list_head tables[NFP
 ÓÃÓÚ×¢²á¡¢Ð¶ÔØip_table, ip6_table, arp_table, eb_tableµÈ¡£
 ½á¹¹×é³É²Î¼ûhttp://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749229&fromuid=20171559µÄ2Â¥¡£
 ¿ÉÒÔ¿´³öÀ´net.xt.tables[]ÊÇstruct xt_table¡£
+²Ù×÷net.xt.tables[]£ºipt_register_table£¬Ö÷Òª¹¦ÄÜÊÇÌî³änet.xt.table[IPV4]Óëxt_hook_link()º¯Êý×¢²áÒ»¸öHOOKµã¡£
+
+
+ÎªÊ²Ã´Çø·Ö²»Í¬µÄCPU£¿
+
+ÒòÎª²»Í¬CPU¶¼»áÊÕµ½Êý¾Ý°ü¡£
+
+
+Ëø»úÖÆÈçºÎÉè¼ÆµÄ£¿
+
+²Î¿¼ÉÏÃæµÄURL¡£
+xt_info_locks[CPU]
+xt[af].mutex
+xt[table->af].mutex
