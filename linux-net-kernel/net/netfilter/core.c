@@ -98,6 +98,34 @@ void nf_unregister_hook(struct nf_hook_ops *reg)
 EXPORT_SYMBOL(nf_unregister_hook);
 
 //yang add 按照[reg->pf][reg->hooknum]加入到nf_hooks对应的链表中去
+//
+// struct list_head nf_hooks[NF_PROTO][NF_HOOKS]: refer Line68, and
+// http://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749208&fromuid=20171559
+//
+// struct nf_hook_ops {
+//	struct list_head	list;
+//
+//	/* User fills in from here down. */
+//	nf_hookfn		*hook; // 这个是hook函数.
+//	struct net_device	*dev;
+//	void			*priv;
+//	u_int8_t		pf;
+//	unsigned int		hooknum;
+//	/* Hooks are ordered in ascending priority. */
+//	int			priority;
+//};
+//
+// typedef unsigned int nf_hookfn(void *priv,
+//			       struct sk_buff *skb,
+//			       const struct nf_hook_state *state);
+//这个函数的返回值是:
+// NF_DROP（0）        数据包被丢弃。即不被下一个钩子函数处理，同时也不再被协议栈处理，并释放掉该数据包。协议栈将处理下一个数据包。
+// NF_ACCEPT（1）        数据包允许通过。即交给下一个钩子函数处理、或交给协议栈继续处理（okfn()）。
+// NF_STOLEN（2）        数据包被停止处理。即不被下一个钩子函数处理，同时也不被协议栈处理，但也不释放数据包。协议栈将处理下一个数据包。
+// NF_QUEUE（3）        将数据包交给nf_queue子系统处理。即不被下一个钩子函数处理，也不被协议栈处理，也不释放数据包。协议栈将处理下一个数据包。
+// NF_REPEAT（4）        数据包将被该返回值的钩子函数再次处理一遍。
+// NF_STOP（5）        数据包停止被该HOOK点的后续钩子函数处理，并交给协议栈继续处理（okfn()）
+//
 int nf_register_hooks(struct nf_hook_ops *reg, unsigned int n)
 {
 	unsigned int i;
@@ -170,7 +198,7 @@ unsigned int nf_iterate(struct list_head *head,
 
 
 /* Returns 1 if okfn() needs to be executed by the caller,
- * -EPERM for NF_DROP, 0 otherwise. 
+ * -EPERM for NF_DROP, 0 otherwise.
  nf_hook_slow去完成钩子函数okfn的顺序遍历(优先级从小到大依次执行)。
  */
 int nf_hook_slow(u_int8_t pf, unsigned int hook, struct sk_buff *skb,
@@ -248,7 +276,7 @@ void nf_ct_attach(struct sk_buff *new, struct sk_buff *skb)
 }
 EXPORT_SYMBOL(nf_ct_attach);
 
-void (*nf_ct_destroy)(struct nf_conntrack *);//指向destroy_conntrack，见nf_conntrack_init 
+void (*nf_ct_destroy)(struct nf_conntrack *);//指向destroy_conntrack，见nf_conntrack_init
 EXPORT_SYMBOL(nf_ct_destroy);
 
 void nf_conntrack_destroy(struct nf_conntrack *nfct)

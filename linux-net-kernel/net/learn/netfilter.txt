@@ -15,3 +15,52 @@ nf_connÖĞµÄ×ÓÁ¬½Ó(IP_CT_RELATED)ÊÇÊ²Ã´£¿
 ÀıÈçFTP£¬»áÊ¹ÓÃÁ½¸öTCPÁ¬½Ó£¬Ò»¸öÓÃÓÚ¿ØÖÆĞÅµÀ¡¢Ò»¸öÓÃÓÚÊı¾İĞÅµÀ(https://wenku.baidu.com/view/f80e67b281c758f5f71f6736.html)¡£ÄÇÃ´Ê×ÏÈ·¢À´µÄÊÇ¿ØÖÆ±¨ÎÄ(IP_CT_NEW)£¬È»ºóÊÇÊı¾İ±¨ÎÄ(IP_CT_RELATED)£¬ÄÇÃ´ĞèÒªÊÖ¶¯ÔÚIP_CT_NEWµÄÁ¬½ÓÉÏÌí¼ÓIP_CT_RELATEDÁ¬½Ó¡£
 
 ÕâÑù×öµÄÔ­ÒòÊÇÒ»´ÎFTP²Ù×÷£¬ĞèÒªÏàÍ¬µÄNATÒ»ÀàµÄ¹¦ÄÜ¡£ËùÒÔIP_CT_NEWÓëÏà¹ØµÄIP_CT_RELATEDÕâÁ½¸öÁ¬½ÓÖ´ĞĞÏàÍ¬µÄ²Ù×÷(ÀıÈçNAT)¡£
+
+
+netfilter¿ò¼Üå
+
+nf_hooks: È«¾Ö½á¹¹Ìå´æ´¢ËùÓĞnetfilter¡£ipv4, ipv6, arp, linux bridge,µÈ¶¼ÔÚÕâ×¢²áÁË¡£
+hookµãÓÀÔ¶ÊÇ: PRE_ROUTING LOCAL_IN FORWARD LOCAL_OUT POST_ROUTING
+Ö»ÊÇÔÚååLBÖĞFORWARD±»½Ğ×öBROUTE£¬²Î¿´bridge_learn.md¡£
+
+/net/netfilter/*: netfilterºËĞÄ¹¦ÄÜ´úÂë£¬hook, nf_conntrack, netlink, xt_match, xt_target
+/net/ipv4/*: ipv4Ğ­ÒéÕ»´úÂë
+ - /net/ipv4/netfilter.c: ×¢²ástatic const struct nf_afinfo nf_ip_afinfo
+ - /net/ipv4/netfilter/*: ipv4 netfilterºËĞÄ´úÂë£¬nf_conntrack_ipv4, nf_nat, ipt_match, ipt_target, iptables, arptables¡£
+/net/ipv6: ºöÂÔ¡£
+/net/bridge/: LB´úÂë
+ - /net/bridge/br_netfilter.c: ×¢²ástatic struct nf_hook_ops br_nf_ops[]
+ - /net/bridge/netfilter/*: ºËĞÄ´úÂë£¬ebtable, eb_nat, eb_match, eb_target
+ 	-- eb_match: ·ÖÎªarp(ebt_arp.c), ipv4(ebt_ip.c), ipv6, stp, vlan, 802.3µÈ¡£
+
+/include/linux: ÕâÊÇÄÚºË½ø³ÌÓëÓÃ»§½ø³Ì(ÓÃ»§½ø³ÌÏİÈëÄÚºË)¹²ÏíµÄÍ·ÎÄ¼ş.
+ - /include/linux/netfilter.h: ÓÃÓÚ/net/netfilter/*£¬Ö÷Òª°üÀ¨x_tables, xt_match,  xt_target
+ - /include/linux/netfilter_arp.h: ÓÃÓÚ/net/netfilter_arp/*£¬Ö÷Òª°üÀ¨arp_tables, arp_match,  arp_target
+ - /include/linux/netfilter_ipv4.h: ÓÃÓÚ/net/netfilter_ipv4/*£¬Ö÷Òª°üÀ¨ip_tables, ipt_match, ipt_target
+ - /include/linux/netfilter_ipv6.h: ÓÃÓÚ/net/netfilter_ipv6/*£¬Ö÷Òª°üÀ¨ip6_tables, ip6t_match, ip6t_target
+ - /include/linux/netfilter_ipv4.h: ÓÃÓÚ/net/netfilter_bridge/*£¬Ö÷Òª°üÀ¨eb_tables, ebt_match, ebt_target, eb_nat
+/include/net: ÍøÂç×ÓÏµÍ³µÄÄÚºËÍ·ÎÄ¼ş
+ - /include/netfilter/*.h: net/netfilter/*µÄÍ·ÎÄ¼ş£¬Ö÷ÒªÊÇnf_conntrackÓënat
+ - /include/netfilter/ipv4/*.h: net/netfilter/ipv4/*µÄÍ·ÎÄ¼ş£¬Ö÷ÒªÊÇnf_conntrack_ipv4
+ - /include/netfilter/ipv6/*.h: net/netfilter/ipv6/*µÄÍ·ÎÄ¼ş£¬Ö÷ÒªÊÇnf_conntrack_ipv6
+
+
+xtables/iptables/hipac ?
+
+ÕâĞ©tablesÊÇÓÃ»§ÌîÈëµÄ£¬µ«ÊÇhttp://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749229&fromuid=20171559
+ÖĞËµ"ÓÉÓÚĞ´Õß£¨Ìí¼Ó¡¢É¾³ı£©ºÍ¶ÁÕß£¨²éÕÒ£©¶¼ÊÇÔÚÄÚºË¿Õ¼ä½ø³ÌÉÏÏÂÎÄÖ´ĞĞ£¬ËùÒÔËüÃÇÖ»ĞèÒªÓÃxt[n].mutexĞÅºÅÁ¿½øĞĞ»¥³â"
+ºóÃæ·ÖÎö¼Ó±íÏîµÄ»úÖÆ¡£
+
+struct  xt_af  xt[]£¬Õâ¸öÓÃÓÚ´æ´¢match¡¢target£¬²Ù×÷ËûµÄÓĞ:
+Ğ´Õß: ¼´iptables_opsÖĞµÄÌí¼Ó¡¢É¾³ı£¬ÕâÊÇÉÏ²ãÓÃ»§Í¨¹ınetlink·ÃÎÊ¡£
+¶ÁÕß: ¼´iptables_opsÖĞµÄ²éÑ¯£¬ÕâÊÇÉÏ²ãÓÃ»§Í¨¹ınetlink·ÃÎÊ¡£
+ÄÚºËÈíÖĞ¶Ï¶ÁÕß: ÄÚºËÊÕ°üÈíÖĞ¶ÏÏÂ°ë²¿»áÔËĞĞTCPIPĞ­ÒéÕ»ÓÚ´Ë¡£
+
+»ùÓÚ´Ë£¬tablesÉè¼ÆÁËÁ½ÖÖÍ¬²½·½Ê½:
+xt[n].mutex±£»¤tableµÄ¶Á¡¢Ğ´²Ù×÷£¬ÒıÓÃ¼ÆÊı·½Ê½ÓÃÓÚtableµÄ×ÊÔ´ÊÍ·Å¡£
+
+net.xt.tables[]: struct net net; struct netns_xt xt; struct list_head tables[NFPROTO_NUMPROTO];
+ÓÃÓÚxt_register_table/xt_hook_link, xt_hook_unlink/xt_unregister_table¡£
+ÓÃÓÚ×¢²á¡¢Ğ¶ÔØip_table, ip6_table, arp_table, eb_tableµÈ¡£
+½á¹¹×é³É²Î¼ûhttp://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749229&fromuid=20171559µÄ2Â¥¡£
+¿ÉÒÔ¿´³öÀ´net.xt.tables[]ÊÇstruct xt_table¡£
