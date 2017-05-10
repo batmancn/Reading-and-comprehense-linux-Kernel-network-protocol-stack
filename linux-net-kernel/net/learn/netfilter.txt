@@ -10,7 +10,16 @@ netfilterÕûÌå½á¹¹
 http://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749208&fromuid=20171559  netfilter½²½â
 
 
-netfilter¿ò¼Üå
+nf_connÖĞµÄ×ÓÁ¬½Ó(IP_CT_RELATED)ÊÇÊ²Ã´£¿
+--------------------------------------------------------------
+
+ÀıÈçFTP£¬»áÊ¹ÓÃÁ½¸öTCPÁ¬½Ó£¬Ò»¸öÓÃÓÚ¿ØÖÆĞÅµÀ¡¢Ò»¸öÓÃÓÚÊı¾İĞÅµÀ(https://wenku.baidu.com/view/f80e67b281c758f5f71f6736.html)¡£ÄÇÃ´Ê×ÏÈ·¢À´µÄÊÇ¿ØÖÆ±¨ÎÄ(IP_CT_NEW)£¬È»ºóÊÇÊı¾İ±¨ÎÄ(IP_CT_RELATED)£¬ÄÇÃ´ĞèÒªÊÖ¶¯ÔÚIP_CT_NEWµÄÁ¬½ÓÉÏÌí¼ÓIP_CT_RELATEDÁ¬½Ó¡£
+
+ÕâÑù×öµÄÔ­ÒòÊÇÒ»´ÎFTP²Ù×÷£¬ĞèÒªÏàÍ¬µÄNATÒ»ÀàµÄ¹¦ÄÜ¡£ËùÒÔIP_CT_NEWÓëÏà¹ØµÄIP_CT_RELATEDÕâÁ½¸öÁ¬½ÓÖ´ĞĞÏàÍ¬µÄ²Ù×÷(ÀıÈçNAT)¡£
+
+
+netfilter¿ò¼Ü?
+-----------------
 
 nf_hooks: È«¾Ö½á¹¹Ìå´æ´¢ËùÓĞnetfilter¡£ipv4, ipv6, arp, linux bridge,µÈ¶¼ÔÚÕâ×¢²áÁË¡£
 hookµãÓÀÔ¶ÊÇ: PRE_ROUTING LOCAL_IN FORWARD LOCAL_OUT POST_ROUTING
@@ -39,6 +48,7 @@ hookµãÓÀÔ¶ÊÇ: PRE_ROUTING LOCAL_IN FORWARD LOCAL_OUT POST_ROUTING
 
 
 xtables/iptables/hipac ?
+-------------------------
 
 ÕâĞ©tablesÊÇÓÃ»§ÌîÈëµÄ£¬µ«ÊÇhttp://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749229&fromuid=20171559
 ÖĞËµ"ÓÉÓÚĞ´Õß£¨Ìí¼Ó¡¢É¾³ı£©ºÍ¶ÁÕß£¨²éÕÒ£©¶¼ÊÇÔÚÄÚºË¿Õ¼ä½ø³ÌÉÏÏÂÎÄÖ´ĞĞ£¬ËùÒÔËüÃÇÖ»ĞèÒªÓÃxt[n].mutexĞÅºÅÁ¿½øĞĞ»¥³â"
@@ -57,9 +67,26 @@ net.xt.tables[]: struct net net; struct netns_xt xt; struct list_head tables[NFP
 ÓÃÓÚ×¢²á¡¢Ğ¶ÔØip_table, ip6_table, arp_table, eb_tableµÈ¡£
 ½á¹¹×é³É²Î¼ûhttp://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749229&fromuid=20171559µÄ2Â¥¡£
 ¿ÉÒÔ¿´³öÀ´net.xt.tables[]ÊÇstruct xt_table¡£
+²Ù×÷net.xt.tables[]£ºipt_register_table£¬Ö÷Òª¹¦ÄÜÊÇÌî³änet.xt.table[IPV4]Óëxt_hook_link()º¯Êı×¢²áÒ»¸öHOOKµã¡£
+
+
+ÎªÊ²Ã´Çø·Ö²»Í¬µÄCPU£¿
+-------------------------
+
+ÒòÎª²»Í¬CPU¶¼»áÊÕµ½Êı¾İ°ü¡£
+
+
+Ëø»úÖÆÈçºÎÉè¼ÆµÄ£¿
+-------------------------
+
+²Î¿¼ÉÏÃæµÄURL¡£
+xt_info_locks[CPU]
+xt[af].mutex
+xt[table->af].mutex
 
 
 iptables°üº¬µÄtarget?
+-------------------------
 
 Iptables°üº¬ÒÔÏÂtarget
 IPT_ACCEPT£º(struct ipt_standard_target *)target->verdict = -NF_ACCEPT-
@@ -97,6 +124,7 @@ NF_STOP
 
 
 nf_connÖĞµÄ×ÓÁ¬½Ó(IP_CT_RELATED)ÊÇÊ²Ã´£¿
+-------------------------
 
 nf_conntrack.koÊÇÕâ¸öÄ£¿é¡£
 
@@ -141,10 +169,8 @@ struct nf_conn {
 Õâ¸ö½á¹¹·Ç³£¼òµ¥£¬ÆäÖĞ×îÖ÷ÒªµÄ¾ÍÊÇtuplehash£¨¸ú×ÙÁ¬½ÓË«·½ÏòÊı¾İ£©
 ºÍstatus£¨¼ÇÂ¼Á¬½Ó×´Ì¬£©£¬ÕâÒ²Á¬½Ó¸ú×Ù×îÖ÷ÒªµÄ¹¦ÄÜ¡£
 
-
 ÔÚstatusÖĞ¿ÉÒÔÉèÖÃµÄ±êÖ¾£¬ÓÉÏÂÃæµÄenum ip_conntrack_statusÃèÊö£¬
 ËüÃÇ¿ÉÒÔ¹²´æ¡£ÕâĞ©±êÖ¾ÉèÖÃºó¾Í²»»áÔÙ±»Çå³ı¡£
-
 enum ip_conntrack_status {
         IPS_EXPECTED_BIT = 0,                /* ±íÊ¾¸ÃÁ¬½ÓÊÇ¸ö×ÓÁ¬½Ó */
         IPS_SEEN_REPLY_BIT = 1,                /*±íÊ¾¸ÃÁ¬½ÓÉÏË«·½ÏòÉÏ¶¼ÓĞÊı¾İ°üÁË */
@@ -187,7 +213,6 @@ enum ip_conntrack_status {
 
 Á¬½Ó¸ú×Ù¶Ô¸ÃÁ¬½ÓÉÏµÄÃ¿¸öÊı¾İ°ü±íÏÖÎªÒÔÏÂ¼¸ÖÖ×´Ì¬Ö®Ò»£¬ÓÉenum ip_conntrack_info
 ±íÊ¾£¬±»ÉèÖÃÔÚskb->nfctinfoÖĞ¡£
-
 enum ip_conntrack_info {
 IP_CT_ESTABLISHED£¨0£©,         /*±íÊ¾Õâ¸öÊı¾İ°ü¶ÔÓ¦µÄÁ¬½ÓÔÚÁ½¸ö·½Ïò
 	¶¼ÓĞÊı¾İ°üÍ¨¹ı£¬²¢ÇÒÕâÊÇORIGINAL³õÊ¼·½ÏòÊı¾İ°ü
@@ -227,6 +252,7 @@ IP_CT_NUMBER = IP_CT_IS_REPLY * 2 - 1£¨5£©        /* ¿É±íÊ¾×´Ì¬µÄ×ÜÊı */
 
 
 Î´´´½¨×ÓÁ¬½ÓÊ±ºònf_conn½á¹¹×éÖ¯?
+-------------------------
 
 ²Î¿¼Á´½Ó2Â¥¡£·Ç³£ÖØÒª¡£¹Ø¼üµã:
 struct netns_ct {
@@ -243,11 +269,13 @@ struct netns_ct {
 
 
 ´´½¨×ÓÁ¬½ÓµÄ½á¹¹?
+-------------------------
 
 ²Î¿¼3Â¥¡£
 
 
 netns_ct?
+----------
 
 struct netns_ct {
         atomic_t                        count;                                /* µ±Ç°Á¬½Ó±íÖĞÁ¬½ÓµÄ¸öÊı */
@@ -318,5 +346,6 @@ struct netns_ct {
 
 
 ipv4µÄnf_connÄ£¿é?
+-------------------------
 
 ²»Í¬Ğ­ÒéÓĞ²»Í¬µÄnf_connÄ£¿é£¬Ä¿Ç°ÄÚÖÃipv4¡£ÆäËûµÄÒª×Ô¼º¿ª·¢¡£
