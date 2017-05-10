@@ -10,13 +10,6 @@ netfilterÕûÌå½á¹¹
 http://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749208&fromuid=20171559  netfilter½²½â
 
 
-nf_connÖĞµÄ×ÓÁ¬½Ó(IP_CT_RELATED)ÊÇÊ²Ã´£¿
-
-ÀıÈçFTP£¬»áÊ¹ÓÃÁ½¸öTCPÁ¬½Ó£¬Ò»¸öÓÃÓÚ¿ØÖÆĞÅµÀ¡¢Ò»¸öÓÃÓÚÊı¾İĞÅµÀ(https://wenku.baidu.com/view/f80e67b281c758f5f71f6736.html)¡£ÄÇÃ´Ê×ÏÈ·¢À´µÄÊÇ¿ØÖÆ±¨ÎÄ(IP_CT_NEW)£¬È»ºóÊÇÊı¾İ±¨ÎÄ(IP_CT_RELATED)£¬ÄÇÃ´ĞèÒªÊÖ¶¯ÔÚIP_CT_NEWµÄÁ¬½ÓÉÏÌí¼ÓIP_CT_RELATEDÁ¬½Ó¡£
-
-ÕâÑù×öµÄÔ­ÒòÊÇÒ»´ÎFTP²Ù×÷£¬ĞèÒªÏàÍ¬µÄNATÒ»ÀàµÄ¹¦ÄÜ¡£ËùÒÔIP_CT_NEWÓëÏà¹ØµÄIP_CT_RELATEDÕâÁ½¸öÁ¬½ÓÖ´ĞĞÏàÍ¬µÄ²Ù×÷(ÀıÈçNAT)¡£
-
-
 netfilter¿ò¼Üå
 
 nf_hooks: È«¾Ö½á¹¹Ìå´æ´¢ËùÓĞnetfilter¡£ipv4, ipv6, arp, linux bridge,µÈ¶¼ÔÚÕâ×¢²áÁË¡£
@@ -64,3 +57,266 @@ net.xt.tables[]: struct net net; struct netns_xt xt; struct list_head tables[NFP
 ÓÃÓÚ×¢²á¡¢Ğ¶ÔØip_table, ip6_table, arp_table, eb_tableµÈ¡£
 ½á¹¹×é³É²Î¼ûhttp://bbs.chinaunix.net/forum.php?mod=viewthread&tid=3749229&fromuid=20171559µÄ2Â¥¡£
 ¿ÉÒÔ¿´³öÀ´net.xt.tables[]ÊÇstruct xt_table¡£
+
+
+iptables°üº¬µÄtarget?
+
+Iptables°üº¬ÒÔÏÂtarget
+IPT_ACCEPT£º(struct ipt_standard_target *)target->verdict = -NF_ACCEPT-
+1        < 0        £¨ipt_do_table()Åöµ½Õâ¸ötargetÖ±½Ó·µ»ØNF_ACCEPT£©
+
+IPT_DROP£º(struct ipt_standard_target *)target->verdict = -NF_DROP-1 <
+0                £¨ipt_do_table()Åöµ½Õâ¸ötargetÖ±½Ó·µ»ØNF_DROP£©
+
+IPT_QUEUE£º(struct ipt_standard_target *)target->verdict = -NF_QUEUE-1 <
+0        £¨ipt_do_table()Åöµ½Õâ¸ötargetÖ±½Ó·µ»ØNF_QUEUE£©
+
+IPT_RETURN£º(struct ipt_standard_target *)target->verdict = -NF_REPATE-
+1        < 0        £¨ipt_do_table()Åöµ½Õâ¸ötargetÌØÊâ´¦Àí£©
+
+Ìø×ªµ½×ÓÁ´target£º(struct ipt_standard_target *)target->verdict =
+ÒªÌø×ª×ÓÁ´µÄÆ«ÒÆÁ¿ > 0        £¨ipt_do_table()Åöµ½Õâ¸ötarget
+»áÌø×ªµ½¸Ã×ÓÁ´´¦Àí£©
+
+IPT_CONTINUE£º        IPT_CONTINUE = XT_CONTINUE = 0xFFFFFFFF < 0        £¨
+ipt_do_table()Åöµ½Õâ¸ötarget»á´¦ÀíÏÂÒ»Ìõ¹æÔò£¬Õâ¸ötarget±»À©Õ¹targetÊ¹ÓÃ£©(
+Ëü²»ÊÇÒ»¸ö±ê×¼target£¬µ«¿É±»ÆäËüÀ©Õ¹TARGETÓÃ×÷·µ»ØÖµ)
+
+À©Õ¹target£ºËüÊÇstruct xt_entry_target + date[
+]                                £¨ipt_do_table()Åöµ½Õâ¸ötarget»áµ÷ÓÃtarget->
+target()´¦Àí£¬²¢¸ù¾İ·µ»ØÖµ×ö´¦Àí¡£À©Õ¹target¿É·µ»ØIPT_CONTINUE£¬»òÏÂÃæ
+netfilter¶¨ÒåµÄÖµ£©
+
+Netfilter´¦ÀíµÄ·µ»ØÖµ
+NF_DROP
+NF_ACCEPT
+NF_STOLEN
+NF_QUEUE
+NF_REPEAT
+NF_STOP
+
+
+nf_connÖĞµÄ×ÓÁ¬½Ó(IP_CT_RELATED)ÊÇÊ²Ã´£¿
+
+nf_conntrack.koÊÇÕâ¸öÄ£¿é¡£
+
+ÀıÈçFTP£¬»áÊ¹ÓÃÁ½¸öTCPÁ¬½Ó£¬Ò»¸öÓÃÓÚ¿ØÖÆĞÅµÀ¡¢Ò»¸öÓÃÓÚÊı¾İĞÅµÀ(https://wenku.baidu.com/view/f80e67b281c758f5f71f6736.html)¡£ÄÇÃ´Ê×ÏÈ·¢À´µÄÊÇ¿ØÖÆ±¨ÎÄ(IP_CT_NEW)£¬È»ºóÊÇÊı¾İ±¨ÎÄ(IP_CT_RELATED)£¬ÄÇÃ´ĞèÒªÊÖ¶¯ÔÚIP_CT_NEWµÄÁ¬½ÓÉÏÌí¼ÓIP_CT_RELATEDÁ¬½Ó¡£
+
+ÕâÑù×öµÄÔ­ÒòÊÇÒ»´ÎFTP²Ù×÷£¬ĞèÒªÏàÍ¬µÄNATÒ»ÀàµÄ¹¦ÄÜ¡£ËùÒÔIP_CT_NEWÓëÏà¹ØµÄIP_CT_RELATEDÕâÁ½¸öÁ¬½ÓÖ´ĞĞÏàÍ¬µÄ²Ù×÷(ÀıÈçNAT)¡£
+
+
+nf_connÖØÒª½á¹¹?
+
+Á¬½Ó¸ú×Ù£¬¹ËÃûË¼Òå£¬¾ÍÊÇÊ¶±ğÒ»¸öÁ¬½ÓÉÏË«·½ÏòµÄÊı¾İ°ü£¬
+Í¬Ê±¼ÇÂ¼×´Ì¬¡£ÏÂÃæ¿´Ò»ÏÂËüµÄÊı¾İ½á¹¹£º
+
+struct nf_conn {
+        /* Usage count in here is 1 for hash table/destruct timer, 1 per skb, plus 1 for any connection(s) we are `master' for */
+
+        struct  nf_conntrack  ct_general;                /* Á¬½Ó¸ú×ÙµÄÒıÓÃ¼ÆÊı */
+
+        spinlock_t  lock;
+
+        /* Connection tracking(Á´½Ó¸ú×Ù)ÓÃÀ´¸ú×Ù¡¢¼ÇÂ¼Ã¿¸öÁ´½ÓµÄĞÅÏ¢(Ä¿Ç°½öÖ§³ÖIPĞ­ÒéµÄÁ¬½Ó¸ú×Ù)¡£
+            Ã¿¸öÁ´½ÓÓÉ¡°tuple¡±À´Î¨Ò»±êÊ¶£¬ÕâÀïµÄ¡°tuple¡±¶Ô²»Í¬µÄĞ­Òé»áÓĞ²»Í¬µÄº¬Òå£¬ÀıÈç¶Ôtcp,udp
+                 À´Ëµ¾ÍÊÇÎåÔª×é: (Ô´IP£¬Ô´¶Ë¿Ú£¬Ä¿µÄIP, Ä¿µÄ¶Ë¿Ú£¬Ğ­ÒéºÅ)£¬¶ÔICMPĞ­ÒéÀ´ËµÊÇ: (Ô´IP, Ä¿
+            µÄIP, id, type, code), ÆäÖĞid,typeÓëcode¶¼ÊÇicmpĞ­ÒéµÄĞÅÏ¢¡£Á´½Ó¸ú×ÙÊÇ·À»ğÇ½ÊµÏÖ×´Ì¬¼ì
+            ²âµÄ»ù´¡£¬ºÜ¶à¹¦ÄÜ¶¼ĞèÒª½èÖúÁ´½Ó¸ú×Ù²ÅÄÜÊµÏÖ£¬ÀıÈçNAT¡¢¿ìËÙ×ª·¢¡¢µÈµÈ¡£*/
+
+        struct  nf_conntrack_tuple_hash  tuplehash[IP_CT_DIR_MAX];
+
+        unsigned long  status;                             /* ¿ÉÒÔÉèÖÃÓÉenum ip_conntrack_statusÖĞÃèÊöµÄ×´Ì¬ */
+
+
+        struct  nf_conn  *master;                        /* Èç¹û¸ÃÁ¬½ÓÊÇÄ³¸öÁ¬½ÓµÄ×ÓÁ¬½Ó£¬ÔòmasterÖ¸ÏòËüµÄÖ÷Á¬½Ó */
+
+        /* Timer function; drops refcnt when it goes off. */
+        struct  timer_list  timeout;
+
+        union nf_conntrack_proto proto;                /* ÓÃÓÚ±£´æ²»Í¬Ğ­ÒéµÄË½ÓĞÊı¾İ */
+
+        /* Extensions */
+        struct nf_ct_ext *ext;                        /* ÓÃÓÚÀ©Õ¹½á¹¹ */
+};
+Õâ¸ö½á¹¹·Ç³£¼òµ¥£¬ÆäÖĞ×îÖ÷ÒªµÄ¾ÍÊÇtuplehash£¨¸ú×ÙÁ¬½ÓË«·½ÏòÊı¾İ£©
+ºÍstatus£¨¼ÇÂ¼Á¬½Ó×´Ì¬£©£¬ÕâÒ²Á¬½Ó¸ú×Ù×îÖ÷ÒªµÄ¹¦ÄÜ¡£
+
+
+ÔÚstatusÖĞ¿ÉÒÔÉèÖÃµÄ±êÖ¾£¬ÓÉÏÂÃæµÄenum ip_conntrack_statusÃèÊö£¬
+ËüÃÇ¿ÉÒÔ¹²´æ¡£ÕâĞ©±êÖ¾ÉèÖÃºó¾Í²»»áÔÙ±»Çå³ı¡£
+
+enum ip_conntrack_status {
+        IPS_EXPECTED_BIT = 0,                /* ±íÊ¾¸ÃÁ¬½ÓÊÇ¸ö×ÓÁ¬½Ó */
+        IPS_SEEN_REPLY_BIT = 1,                /*±íÊ¾¸ÃÁ¬½ÓÉÏË«·½ÏòÉÏ¶¼ÓĞÊı¾İ°üÁË */
+
+        IPS_ASSURED_BIT = 2,                /* TCP£ºÔÚÈı´ÎÎÕÊÖ½¨Á¢ÍêÁ¬½Óºó¼´Éè¶¨¸Ã±êÖ¾¡£
+        	UDP£ºÈç¹ûÔÚ¸ÃÁ¬½ÓÉÏµÄÁ½¸ö·½Ïò¶¼ÓĞÊı¾İ°üÍ¨¹ı£¬
+        	ÔòÔÙÓĞÊı¾İ°üÔÚ¸ÃÁ¬½ÓÉÏÍ¨¹ıÊ±£¬¾ÍÉè¶¨¸Ã±êÖ¾¡£
+        	ICMP£º²»ÉèÖÃ¸Ã±êÖ¾ */
+
+        IPS_CONFIRMED_BIT = 3,                /* ±íÊ¾¸ÃÁ¬½ÓÒÑ±»Ìí¼Óµ½net->ct.hash±íÖĞ */
+
+        IPS_SRC_NAT_BIT = 4,                /*ÔÚPOSTROUTING´¦£¬µ±Ìæ»»replytupleÍê³ÉÊ±, ÉèÖÃ¸Ã±ê¼Ç */
+
+        IPS_DST_NAT_BIT = 5,                /* ÔÚPREROUTING´¦£¬µ±Ìæ»»replytupleÍê³ÉÊ±, ÉèÖÃ¸Ã±ê¼Ç */
+
+        /* Both together. */
+        IPS_NAT_MASK = (IPS_DST_NAT | IPS_SRC_NAT),
+        /* Connection needs TCP sequence adjusted. */
+        IPS_SEQ_ADJUST_BIT = 6,
+        IPS_SRC_NAT_DONE_BIT = 7,        /* ÔÚPOSTROUTING´¦£¬ÒÑ±»SNAT´¦Àí£¬²¢±»¼ÓÈëµ½bysourceÁ´ÖĞ£¬ÉèÖÃ¸Ã±ê¼Ç */
+
+        IPS_DST_NAT_DONE_BIT = 8,        /* ÔÚPREROUTING´¦£¬ÒÑ±»DNAT´¦Àí£¬²¢±»¼ÓÈëµ½bysourceÁ´ÖĞ£¬ÉèÖÃ¸Ã±ê¼Ç */
+
+        /* Both together */
+        IPS_NAT_DONE_MASK = (IPS_DST_NAT_DONE | IPS_SRC_NAT_DONE),
+        IPS_DYING_BIT = 9,                /*±íÊ¾¸ÃÁ¬½ÓÕıÔÚ±»ÊÍ·Å£¬
+        	ÄÚºËÍ¨¹ı¸Ã±êÖ¾±£Ö¤ÕıÔÚ±»ÊÍ·ÅµÄct²»»á±»ÆäËüµØ·½ÔÙ´ÎÒıÓÃ¡£
+        	ÓĞÁËÕâ¸ö±êÖ¾£¬µ±Ä³¸öÁ¬½ÓÒª±»É¾³ıÊ±£¬¼´Ê¹Ëü»¹ÔÚnet->ct.hashÖĞ£¬
+        	Ò²²»»áÔÙ´Î±»ÒıÓÃ¡£*/
+
+        IPS_FIXED_TIMEOUT_BIT = 10,        /*¹Ì¶¨Á¬½Ó³¬Ê±Ê±¼ä£¬
+        	Õâ½«²»¸ù¾İ×´Ì¬ĞŞ¸ÄÁ¬½Ó³¬Ê±Ê±¼ä¡£
+        	Í¨¹ıº¯Êınf_ct_refresh_acct()ĞŞ¸Ä³¬Ê±Ê±¼äÊ±¼ì²é¸Ã±êÖ¾¡£ */
+
+        IPS_TEMPLATE_BIT = 11,                /* ÓÉCT target½øĞĞÉèÖÃ£¨Õâ¸ötargetÖ»ÄÜÓÃÔÚraw±íÖĞ£¬
+        	ÓÃÓÚÎªÊı¾İ°ü¹¹½¨Ö¸¶¨ct£¬²¢´òÉÏ¸Ã±êÖ¾£©£¬
+        	ÓÃÓÚ±íÃ÷Õâ¸öctÊÇÓÉCT target´´½¨µÄ */
+
+};
+
+Á¬½Ó¸ú×Ù¶Ô¸ÃÁ¬½ÓÉÏµÄÃ¿¸öÊı¾İ°ü±íÏÖÎªÒÔÏÂ¼¸ÖÖ×´Ì¬Ö®Ò»£¬ÓÉenum ip_conntrack_info
+±íÊ¾£¬±»ÉèÖÃÔÚskb->nfctinfoÖĞ¡£
+
+enum ip_conntrack_info {
+IP_CT_ESTABLISHED£¨0£©,         /*±íÊ¾Õâ¸öÊı¾İ°ü¶ÔÓ¦µÄÁ¬½ÓÔÚÁ½¸ö·½Ïò
+	¶¼ÓĞÊı¾İ°üÍ¨¹ı£¬²¢ÇÒÕâÊÇORIGINAL³õÊ¼·½ÏòÊı¾İ°ü
+	£¨ÎŞÂÛÊÇTCP¡¢UDP¡¢ICMPÊı¾İ°ü£¬Ö»ÒªÔÚ¸ÃÁ¬½ÓµÄÁ½¸ö·½Ïò
+	ÉÏÒÑÓĞÊı¾İ°üÍ¨¹ı£¬¾Í»á½«¸ÃÁ¬½ÓÉèÖÃÎªIP_CT_ESTABLISHED×´Ì¬¡£
+	²»»á¸ù¾İĞ­ÒéÖĞµÄ±êÖ¾Î»½øĞĞÅĞ¶Ï£¬ÀıÈçTCPµÄSYNµÈ£©¡£
+	µ«Ëü±íÊ¾²»ÁËÕâÊÇµÚ¼¸¸öÊı¾İ°ü£¬Ò²ËµÃ÷²»ÁËÕâ¸öCTÊÇ·ñÊÇ×ÓÁ¬½Ó¡£*/
+
+IP_CT_RELATED£¨1£©,                /* ±íÊ¾Õâ¸öÊı¾İ°ü¶ÔÓ¦µÄÁ¬½Ó»¹Ã»ÓĞREPLY
+	·½ÏòÊı¾İ°ü£¬µ±Ç°Êı¾İ°üÊÇORIGINAL·½ÏòÊı¾İ°ü¡£
+	²¢ÇÒÕâ¸öÁ¬½Ó¹ØÁªÒ»¸öÒÑÓĞµÄÁ¬½Ó£¬ÊÇ¸ÃÒÑÓĞÁ¬½ÓµÄ×ÓÁ¬½Ó£¬
+	£¨¼´status±êÖ¾ÖĞÒÑ¾­ÉèÖÃÁËIPS_EXPECTED±êÖ¾£¬¸Ã±êÖ¾ÔÚ
+	init_conntrack()º¯ÊıÖĞÉèÖÃ£©¡£µ«ÎŞ·¨ÅĞ¶ÏÊÇµÚ¼¸¸öÊı¾İ°ü
+	£¨²»Ò»¶¨ÊÇµÚÒ»¸ö£©*/
+
+IP_CT_NEW£¨2£©,                        /* ±íÊ¾Õâ¸öÊı¾İ°ü¶ÔÓ¦µÄÁ¬½Ó»¹Ã»ÓĞREPLY
+	·½ÏòÊı¾İ°ü£¬µ±Ç°Êı¾İ°üÊÇORIGINAL·½ÏòÊı¾İ°ü£¬¸ÃÁ¬½Ó²»ÊÇ×ÓÁ¬½Ó¡£
+	µ«ÎŞ·¨ÅĞ¶ÏÊÇµÚ¼¸¸öÊı¾İ°ü£¨²»Ò»¶¨ÊÇµÚÒ»¸ö£©*/
+
+IP_CT_IS_REPLY£¨3£©,                /*Õâ¸ö×´Ì¬Ò»°ã²»µ¥¶ÀÊ¹ÓÃ£¬
+	Í¨³£ÒÔÏÂÃæÁ½ÖÖ·½Ê½Ê¹ÓÃ */
+
+IP_CT_ESTABLISHED + IP_CT_IS_REPLY£¨3£©,        /*±íÊ¾Õâ¸öÊı¾İ°ü¶ÔÓ¦µÄÁ¬½ÓÔÚÁ½¸ö
+	·½Ïò¶¼ÓĞÊı¾İ°üÍ¨¹ı£¬²¢ÇÒÕâÊÇREPLYÓ¦´ğ·½ÏòÊı¾İ°ü¡£
+	µ«Ëü±íÊ¾²»ÁËÕâÊÇµÚ¼¸¸öÊı¾İ°ü£¬Ò²ËµÃ÷²»ÁËÕâ¸öCTÊÇ·ñÊÇ×ÓÁ¬½Ó¡£*/
+
+IP_CT_RELATED + IP_CT_IS_REPLY£¨4£©,                /* Õâ¸ö×´Ì¬½öÔÚ
+	nf_conntrack_attach()º¯ÊıÖĞÉèÖÃ£¬ÓÃÓÚ±¾»ú·µ»ØREJECT£¬ÀıÈç·µ»ØÒ»¸öICMP
+	Ä¿µÄ²»¿É´ï±¨ÎÄ£¬»ò·µ»ØÒ»¸öreset±¨ÎÄ¡£
+	Ëü±íÊ¾²»ÁËÕâÊÇµÚ¼¸¸öÊı¾İ°ü¡£*/
+
+IP_CT_NUMBER = IP_CT_IS_REPLY * 2 - 1£¨5£©        /* ¿É±íÊ¾×´Ì¬µÄ×ÜÊı */
+};
+
+ÒÔÉÏ¾ÍÊÇÁ¬½Ó¸ú×ÙÀï×îÖØÒªµÄÊı¾İ½á¹¹ÁË£¬
+ÓÃÓÚ¸ú×ÙÁ¬½Ó¡¢¼ÇÂ¼×´Ì¬¡¢²¢¶Ô¸ÃÁ¬½ÓµÄÃ¿¸öÊı¾İ°üÉèÖÃÒ»ÖÖ×´Ì¬¡£
+
+
+Î´´´½¨×ÓÁ¬½ÓÊ±ºònf_conn½á¹¹×éÖ¯?
+
+²Î¿¼Á´½Ó2Â¥¡£·Ç³£ÖØÒª¡£¹Ø¼üµã:
+struct netns_ct {
+	...,
+	*stat -> ip_conntrack_stat
+	*hash -> hlist_nulls_head(Á´½Óhash±í£¬ËùÓĞÁ´½Ó¶¼·ÅÔÚÕâÀï)
+		-> struct nf_conn(Ò»¸öÁ¬½Ó£¬²Î¿¼ÉÏÃæµÄ½âÊÍ)
+	*expect_hash -> hlist_head(expectÁ¬½Ó±í)
+		-> struct 	nf_conntrack_expect(Ò»¸öexpect£¬±íÊ¾Ö÷Á´½ÓÆÚ´ıµÄÁ¬½Ó£¬ÓÉhelperº¯Êı´´½¨£¬µ±ÕÒµ½¸ÃÆÚ´ıµÄÁ¬½ÓºóÕâ¸ö½á¹¹ÊÍ·Å)
+			-> struct hlist_head_nf_helper_hash[]
+				-> nf_conntrack_helper(Õâ¸ö¾ÍÊÇÆÚ´ıµÄÁ¬½Ó)
+	...,
+}
+
+
+´´½¨×ÓÁ¬½ÓµÄ½á¹¹?
+
+²Î¿¼3Â¥¡£
+
+
+netns_ct?
+
+struct netns_ct {
+        atomic_t                        count;                                /* µ±Ç°Á¬½Ó±íÖĞÁ¬½ÓµÄ¸öÊı */
+
+        unsigned int                expect_count;                        /* nf_conntrack_helper´´½¨µÄÆÚ´ı×ÓÁ¬½Ó
+        											nf_conntrack_expectÏîµÄ¸öÊı */
+
+        unsigned int                htable_size;                        /*´æ´¢Á¬½Ó£¨nf_conn£©µÄHASHÍ°µÄ´óĞ¡ */
+
+        struct kmem_cache        *nf_conntrack_cachep;                /*Ö¸ÏòÓÃÓÚ·ÖÅänf_conn½á¹¹¶ø½¨Á¢µÄ¸ßËÙ»º´æ£¨slab£©¶ÔÏó */
+
+        struct hlist_nulls_head        *hash;	/* Ö¸Ïò´æ´¢Á¬½Ó£¨nf_conn£©µÄHASHÍ° */
+
+        struct hlist_head                *expect_hash;/* Ö¸Ïò´æ´¢ÆÚ´ı×ÓÁ¬½Ónf_conntrack_expectÏîµÄHASHÍ° */
+
+        struct hlist_nulls_head        unconfirmed;                        /*¶ÔÓÚÒ»¸öÁ´½ÓµÄµÚÒ»¸ö°ü£¬
+        	ÔÚinit_conntrack()º¯ÊıÖĞ»á½«¸Ã°üoriginal·½ÏòµÄtuple½á¹¹¹ÒÈë¸ÃÁ´£¬Õâ
+		ÊÇÒòÎªÔÚ´ËÊ±»¹²»È·¶¨¸ÃÁ´½Ó»á²»»á±»ºóĞøµÄ¹æÔò¹ıÂËµô£¬
+		Èç¹û±»¹ıÂËµô¾ÍÃ»ÓĞ±ØÒª¹ÒÈëÕıÊ½µÄÁ´½Ó¸ú×Ù±í¡£
+
+		ÔÚipv4_confirm()º¯ÊıÖĞ£¬»á½«unconfirmedÁ´ÖĞµÄtuple²ğµô£¬È»ºóÔÙ½«
+		original·½ÏòºÍreply·½ÏòµÄtuple¹ÒÈëµ½ÕıÊ½µÄÁ´½Ó¸ú×Ù±íÖĞ£¬
+		¼´init_net.ct.hashÖĞ£¬ÕâÊÇÒòÎªµ½´ïipv4_confirm()º¯ÊıÊ±£¬
+		Ó¦¾­ÔÚ¹³×ÓNF_IP_POST_ROUTING´¦ÁË£¬ÒÑ¾­Í¨¹ıÁËÇ°ÃæµÄfilter±í¡£
+		Í¨¹ıcat  /proc/net/nf_conntrackÏÔÊ¾Á¬½Ó£¬ÊÇ²»»áÏÔÊ¾¸ÃÁ´ÖĞµÄÁ¬½ÓµÄ¡£
+		µ«×ÜµÄÁ¬½Ó¸öÊı£¨net->ct.count£©°üº¬¸ÃÁ´ÖĞµÄÁ¬½Ó¡£
+
+		µ±×¢Ïúl3proto¡¢l4proto¡¢helper¡¢natµÈ×ÊÔ´»òÔÚÓ¦ÓÃ²ãÉ¾³ıËùÓĞÁ¬½Ó
+		£¨conntrack -F£©Ê±£¬³ıÁËÊÍ·ÅconfirmedÁ¬½Ó£¨ÔÚnet->ct.hashÖĞµÄÁ¬½Ó£©
+		µÄ×ÊÔ´£¬»¹ÒªÊÍ·ÅunconfirmedÁ¬½Ó£¨¼´ÔÚ¸ÃÁ´ÖĞµÄÁ¬½Ó£©µÄ×ÊÔ´¡£*/
+
+        struct hlist_nulls_head        dying;	/* ÊÍ·ÅÁ¬½ÓÊ±£¬Í¨¸æDESTROYÊÂ¼şÊ§°ÜµÄct
+		±»·ÅÈë¸ÃÁ´ÖĞ£¬²¢ÉèÖÃ¶¨Ê±Æ÷£¬µÈ´ıÏÂ´ÎÍ¨¸æ¡£
+		Í¨¹ıcat  /proc/net/nf_conntrackÏÔÊ¾Á¬½Ó£¬ÊÇ²»»áÏÔÊ¾¸ÃÁ´ÖĞµÄÁ¬½ÓµÄ¡£
+		µ«×ÜµÄÁ¬½Ó¸öÊı£¨net->ct.count£©°üº¬¸ÃÁ´ÖĞµÄÁ¬½Ó¡£
+
+		µ±×¢ÏúÁ¬½Ó¸ú×ÙÄ£¿éÊ±£¬Í¬Ê±ÒªÇå³ıÕıÔÙµÈ´ı±»ÊÍ·ÅµÄÁ¬½Ó
+		£¨¼´¸ÃÁ´ÖĞµÄÁ¬½Ó£©*/
+
+        struct ip_conntrack_stat        __percpu *stat;    /* Á¬½Ó¸ú×Ù¹ı³ÌÖĞµÄÒ»Ğ©×´Ì¬Í³¼Æ£¬
+        	Ã¿¸öCPUÒ»Ïî£¬Ä¿µÄÊÇÎªÁË¼õÉÙËø */
+
+        int                        sysctl_events;                        /*ÊÇ·ñ¿ªÆôÁ¬½ÓÊÂ¼şÍ¨¸æ¹¦ÄÜ */
+
+        unsigned int                sysctl_events_retry_timeout;        /*Í¨¸æÊ§°Üºó£¬
+        	ÖØÊÔÍ¨¸æµÄ¼ä¸ôÊ±¼ä£¬µ¥Î»ÊÇÃë */
+
+        int                        sysctl_acct;                        /*ÊÇ·ñ¿ªÆôÃ¿¸öÁ¬½ÓÊı¾İ°üÍ³¼Æ¹¦ÄÜ */
+
+        int                        sysctl_checksum;
+        unsigned int                sysctl_log_invalid;                 /*Log invalid packets */
+
+#ifdef CONFIG_SYSCTL
+        struct ctl_table_header        *sysctl_header;
+        struct ctl_table_header        *acct_sysctl_header;
+        struct ctl_table_header        *event_sysctl_header;
+#endif
+        int                        hash_vmalloc;                        /*´æ´¢Á¬½Ó£¨nf_conn£©µÄHASHÍ°
+        	ÊÇ·ñÊÇÊ¹ÓÃvmalloc()½øĞĞ·ÖÅäµÄ */
+
+        int                        expect_vmalloc;                        /*´æ´¢ÆÚ´ı×ÓÁ¬½Ónf_conntrack_expect
+        	ÏîµÄHASHÍ°ÊÇ·ñÊÇÊ¹ÓÃvmalloc()½øĞĞ·ÖÅäµÄ */
+
+        char                        *slabname;                        /*ÓÃÓÚ·ÖÅänf_conn½á¹¹¶ø½¨Á¢µÄ
+        	¸ßËÙ»º´æ£¨slab£©¶ÔÏóµÄÃû×Ö */
+
+};
+
+
+ipv4µÄnf_connÄ£¿é?
+
+²»Í¬Ğ­ÒéÓĞ²»Í¬µÄnf_connÄ£¿é£¬Ä¿Ç°ÄÚÖÃipv4¡£ÆäËûµÄÒª×Ô¼º¿ª·¢¡£
